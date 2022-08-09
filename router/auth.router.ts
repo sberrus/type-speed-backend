@@ -1,19 +1,37 @@
 //Imports
 import { Router } from "express";
 import { check } from "express-validator";
-import { createUser } from "../controller/auth.controller";
-import { userExists } from "../helpers/db-validator";
 // //helpers
+import { userNotExists } from "../helpers/db-validator";
 // //middlewares
 import validateRequest from "../middleware/validateRequest";
 // //controllers
-// import { login } from "../controllers/auth";
+import { createUser, login } from "../controller/auth.controller";
 
 //rutas
 export const authRouter = Router();
 
 authRouter.post(
-	"/",
+	"/login",
+	[
+		check("username")
+			.exists()
+			.withMessage("username field required")
+			.isLength({ max: 20 })
+			.withMessage("username max-lenght 20")
+			.trim(),
+		check("password")
+			.exists()
+			.withMessage("password field required")
+			.isLength({ max: 255 })
+			.withMessage("password max-lenght 255")
+			.trim(),
+		validateRequest,
+	],
+	login
+);
+authRouter.post(
+	"/register",
 	[
 		check("username")
 			.exists()
@@ -22,7 +40,7 @@ authRouter.post(
 			.withMessage("username max-lenght 20")
 			.trim()
 			.escape()
-			.custom(userExists)
+			.custom(userNotExists)
 			.bail(),
 		check("password")
 			.exists()

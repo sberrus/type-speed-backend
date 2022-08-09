@@ -3,9 +3,9 @@ import User from "../model/user.model";
 
 /**
  * Check if user already exist in users table and throws error if found.
- * @param username table´s Primary Key
+ * @param username
  */
-export const userExists = async (username: string) => {
+export const userNotExists = async (username: string) => {
 	let user;
 	try {
 		user = await User.findByPk(username);
@@ -17,4 +17,3 @@ export const userExists = async (username: string) => {
 		throw new Error(`username ${username}, already exists`);
 	}
 };
-//
