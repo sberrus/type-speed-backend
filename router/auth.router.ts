@@ -1,6 +1,6 @@
 //Imports
-import { Router } from "express";
-import { check } from "express-validator";
+import { NextFunction, Request, Response, Router } from "express";
+import { body, check } from "express-validator";
 // //helpers
 import { userNotExists } from "../helpers/db-validator";
 // //middlewares
@@ -13,14 +13,18 @@ export const authRouter = Router();
 
 authRouter.post(
 	"/login",
+	(req: Request, res: Response, next: NextFunction) => {
+		console.log(req.body);
+		next();
+	},
 	[
-		check("username")
+		body("username")
 			.exists()
 			.withMessage("username field required")
 			.isLength({ max: 20 })
 			.withMessage("username max-lenght 20")
 			.trim(),
-		check("password")
+		body("password")
 			.exists()
 			.withMessage("password field required")
 			.isLength({ max: 255 })
