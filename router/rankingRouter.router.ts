@@ -6,28 +6,28 @@ import validateRequest from "../middleware/validateRequest";
 const rankingRouter = Router();
 
 rankingRouter.post(
-	"/",
-	[
-		body("id").notEmpty().withMessage("Field required"),
-		body("total_words_count")
-			.notEmpty()
-			.withMessage("Field required")
-			.isNumeric()
-			.withMessage("The value must be number"),
-		body("errors_word_count")
-			.notEmpty()
-			.withMessage("Field required")
-			.isNumeric()
-			.withMessage("The value must be number"),
-		body("success_word_count")
-			.notEmpty()
-			.withMessage("Field required")
-			.isNumeric()
-			.withMessage("The value must be number"),
-		body("created_at").notEmpty().withMessage("Field required").isNumeric().withMessage("The value must be number"),
-		validateRequest,
-	],
-	registerResult
+  "/",
+  [
+    body("id").exists().withMessage("Field required"),
+    body("total_words_count")
+      .exists()
+      .withMessage("Field required")
+      .isNumeric()
+      .withMessage("The value must be number"),
+    body("errors_word_count")
+      .exists()
+      .withMessage("Field required")
+      .isNumeric()
+      .withMessage("The value must be number"),
+    body("success_word_count")
+      .exists()
+      .withMessage("Field required")
+      .isNumeric()
+      .withMessage("The value must be number"),
+    body("created_at").exists().withMessage("Field required"),
+    validateRequest,
+  ],
+  registerResult
 );
 
 export default rankingRouter;
