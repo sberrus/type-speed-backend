@@ -9,27 +9,23 @@ const rankingRouter = Router();
 rankingRouter.post(
   "/",
   [
-    body("id").notEmpty().withMessage("Field required"),
+    body("id").exists().withMessage("Field required"),
     body("total_words_count")
-      .notEmpty()
+      .exists()
       .withMessage("Field required")
       .isNumeric()
       .withMessage("The value must be number"),
     body("errors_word_count")
-      .notEmpty()
+      .exists()
       .withMessage("Field required")
       .isNumeric()
       .withMessage("The value must be number"),
     body("success_word_count")
-      .notEmpty()
+      .exists()
       .withMessage("Field required")
       .isNumeric()
       .withMessage("The value must be number"),
-    body("created_at")
-      .notEmpty()
-      .withMessage("Field required")
-      .isNumeric()
-      .withMessage("The value must be number"),
+    body("created_at").exists().withMessage("Field required"),
     validateRequest,
   ],
   registerResult
