@@ -5,7 +5,6 @@ import validateRequest from "../middleware/validateRequest";
 
 const rankingRouter = Router();
 
-// TODO: create a custom validator to validate if user have enought attempts available.
 rankingRouter.post(
   "/",
   [
