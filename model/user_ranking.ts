@@ -1,14 +1,15 @@
 import { DataTypes } from "sequelize";
 import sequelizeConnection from "../database/connection";
 
-const UserRanking = sequelizeConnection.define("je_user_ranking", {
+const UserRanking = sequelizeConnection.define("je_user_rankings", {
 	username: {
 		type: DataTypes.STRING,
+		primaryKey: true,
 	},
 	words_per_minute: {
 		type: DataTypes.NUMBER,
 	},
-	total_chart_success_count: {
+	total_chart_count: {
 		type: DataTypes.NUMBER,
 	},
 	charts_per_minute: {
@@ -17,7 +18,7 @@ const UserRanking = sequelizeConnection.define("je_user_ranking", {
 	error_count: {
 		type: DataTypes.NUMBER,
 	},
-	created_at: {
+	createdAt: {
 		type: DataTypes.DATE,
 	},
 });

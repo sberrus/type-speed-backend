@@ -17,7 +17,7 @@ rankingRouter.post(
 			.withMessage("Field required")
 			.isNumeric()
 			.withMessage("The value must be number"),
-		body("total_chart_success_count")
+		body("total_chart_count")
 			.exists()
 			.withMessage("Field required")
 			.isNumeric()
@@ -28,7 +28,7 @@ rankingRouter.post(
 			.isNumeric()
 			.withMessage("The value must be number"),
 		body("error_count").exists().withMessage("Field required").isNumeric().withMessage("The value must be number"),
-		body("created_at").exists().withMessage("Field required"),
+		body("createdAt").exists().withMessage("Field required"),
 		validateRequest,
 	],
 	registerResult
