@@ -13,9 +13,12 @@ const validateJWT = (req: Request, res: Response, next: NextFunction) => {
 	}
 
 	// validate
-	const decoded = jwt.verify(token, JWT_PRIVATE_KEY);
-
-	console.log(decoded);
+	try {
+		jwt.verify(token, JWT_PRIVATE_KEY);
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json(createErrorResponse("Token not valid"));
+	}
 
 	next();
 };

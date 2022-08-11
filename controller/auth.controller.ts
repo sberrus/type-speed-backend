@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import createErrorResponse from "../helpers/createErrorResponse";
 import generateJWT from "../helpers/generateJWT";
 import { compareHash, generateHash } from "../helpers/hasing";
-import User from "../model/user.model";
+import User from "../model/user";
 
 export const createUser = async (req: Request, res: Response) => {
 	const { username, password, password_confirm, secret_question, secret } = req.body;

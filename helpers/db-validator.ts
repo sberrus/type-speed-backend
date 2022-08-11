@@ -1,5 +1,5 @@
 // Model
-import User from "../model/user.model";
+import User from "../model/user";
 
 /**
  * Check if user already exist in users table and throws error if found.
