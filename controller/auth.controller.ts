@@ -18,15 +18,18 @@ export const createUser = async (req: Request, res: Response) => {
 	secretHash = generateHash(secret);
 
 	// save data into bbdd
+	let user;
 	try {
-		await User.create({ username, password: passwordHash, secret_question, secret: secretHash });
+		user = await User.create({ username, password: passwordHash, secret_question, secret: secretHash });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json(createErrorResponse("Server Error"));
 		return;
 	}
 
-	res.json({ ok: true, msg: `User ${username} successfully created!` });
+	const token = await generateJWT(username);
+
+	res.json({ user: { username }, token });
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -53,9 +56,11 @@ export const login = async (req: Request, res: Response) => {
 
 	// generate JWT
 	try {
+		// payload data
 		const token = await generateJWT(user.get("username") as string);
+		const username = user.get("username");
 
-		res.json({ ok: true, token });
+		res.json({ user: { username }, token });
 	} catch (error) {
 		console.log(error);
 		res.json(createErrorResponse("Server Error in auth-controller"));
