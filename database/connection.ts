@@ -7,9 +7,9 @@ const dbDriver = process.env.DB_DRIVER as Dialect;
 const dbPassword = process.env.DB_PASSWORD;
 
 const sequelizeConnection = new Sequelize(dbName, dbUser, dbPassword, {
-	host: dbHost,
-	dialect: dbDriver,
-	logging: false,
+  host: dbHost,
+  dialect: dbDriver,
+  logging: false,
 });
 
 export default sequelizeConnection;
