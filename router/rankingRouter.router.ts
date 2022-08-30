@@ -11,24 +11,22 @@ rankingRouter.post(
 	"/",
 	validateJWT,
 	[
-		body("username").exists().withMessage("Field required").custom(userExists),
+		body("id").exists().withMessage("Field required").custom(userExists),
 		body("words_per_minute")
 			.exists()
 			.withMessage("Field required")
 			.isNumeric()
 			.withMessage("The value must be number"),
-		body("total_chart_count")
+		body("valid_words")
 			.exists()
 			.withMessage("Field required")
 			.isNumeric()
 			.withMessage("The value must be number"),
-		body("charts_per_minute")
+		body("wrong_words")
 			.exists()
 			.withMessage("Field required")
 			.isNumeric()
 			.withMessage("The value must be number"),
-		body("error_count").exists().withMessage("Field required").isNumeric().withMessage("The value must be number"),
-		body("createdAt").exists().withMessage("Field required"),
 		validateRequest,
 	],
 	registerResult

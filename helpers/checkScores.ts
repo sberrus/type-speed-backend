@@ -9,7 +9,10 @@ type CurrentScoreType = {
 	createdAt: string;
 };
 
-const isNewScore = (currentScore: CurrentScoreType, bestScore: Model<any, any> | null) => {
+const isNewScore = (
+	currentScore: CurrentScoreType,
+	bestScore: Model<any, any> | null
+) => {
 	// Words Per Minute
 	const currentWPM = Number(currentScore.words_per_minute);
 	const bestWPM = Number(bestScore?.get("words_per_minute"));

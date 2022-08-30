@@ -1,35 +1,62 @@
+// imports
 import { Request, Response } from "express";
 import { Model } from "sequelize/types";
-import isNewScore from "../helpers/checkScores";
-import createErrorResponse from "../helpers/createErrorResponse";
+// models
 import Ranking from "../model/ranking";
 import UserRanking from "../model/user_ranking";
-
+// helpers
+import isNewScore from "../helpers/checkScores";
+import createErrorResponse from "../helpers/createErrorResponse";
+// types
+export type StatsType = {
+	id: string;
+	words_per_minute: number;
+	valid_words: number;
+	wrong_words: number;
+};
 const registerScore = async (req: Request, res: Response) => {
-	const username = req.body["username"];
+	const { id, words_per_minute, valid_words, wrong_words } = req.body;
 
 	// scores
 	let currentScore, bestScore: Model<any, any> | null;
+
+	// check if user have any score
 	try {
-		// check if user have any score
 		currentScore = req.body;
-		bestScore = await Ranking.findByPk(username);
+		bestScore = await Ranking.findByPk(id);
 	} catch (error) {
 		console.log(error);
-		return res.status(500).json(createErrorResponse("Server Error in ranking-controller"));
+		return res
+			.status(500)
+			.json(createErrorResponse("Server Error in ranking-controller"));
 	}
 
 	// if user have no score saved create first scores
-	if (!currentScore && !bestScore) {
+	if (!bestScore) {
 		try {
 			// create first score
-			await UserRanking.create(req.body);
+			await UserRanking.create({
+				id,
+				words_per_minute,
+				valid_words,
+				wrong_words,
+			});
 			// create first best score
-			await Ranking.create(req.body);
+			await Ranking.create({
+				id,
+				words_per_minute,
+				valid_words,
+				wrong_words,
+			});
 
 			return res.json({ ok: true, msg: "Score saved!" });
 		} catch (error) {
-			return res.status(500).json(createErrorResponse("Server error in ranking-controller"));
+			console.log(error);
+			return res
+				.status(500)
+				.json(
+					createErrorResponse("Server error in ranking-controller")
+				);
 		}
 	}
 
@@ -43,7 +70,11 @@ const registerScore = async (req: Request, res: Response) => {
 			newBestScore = await bestScore?.save();
 		} catch (error) {
 			console.log(error);
-			return res.status(500).json(createErrorResponse("Server error in ranking - controller"));
+			return res
+				.status(500)
+				.json(
+					createErrorResponse("Server error in ranking - controller")
+				);
 		}
 	}
 
@@ -52,9 +83,15 @@ const registerScore = async (req: Request, res: Response) => {
 		await UserRanking.create(currentScore);
 	} catch (error) {
 		console.log(error);
-		return res.status(500).json(createErrorResponse("Server error un ranking - controller"));
+		return res
+			.status(500)
+			.json(createErrorResponse("Server error un ranking - controller"));
 	}
-	return res.json({ ok: true, msg: "Score saved!", newBestScore: !!newBestScore });
+	return res.json({
+		ok: true,
+		msg: "Score saved!",
+		newBestScore: !!newBestScore,
+	});
 };
 
 export { registerScore as registerResult };
