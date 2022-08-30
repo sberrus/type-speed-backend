@@ -14,7 +14,7 @@ export type StatsType = {
 	valid_words: number;
 	wrong_words: number;
 };
-const registerScore = async (req: Request, res: Response) => {
+export const registerScore = async (req: Request, res: Response) => {
 	const { id, words_per_minute, valid_words, wrong_words } = req.body;
 
 	// scores
@@ -94,4 +94,10 @@ const registerScore = async (req: Request, res: Response) => {
 	});
 };
 
-export { registerScore as registerResult };
+export const getTopTen = async (req: Request, res: Response) => {
+	res.json({ ok: true });
+};
+
+export const getUserRanking = (req: Request, res: Response) => {
+	res.json({ ok: true });
+};

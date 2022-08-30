@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { registerResult } from "../controller/ranking.controller";
+import {
+	getTopTen,
+	getUserRanking,
+	registerScore,
+} from "../controller/ranking.controller";
 import { userExists } from "../helpers/db-validator";
 import validateJWT from "../middleware/validateJWT";
 import validateRequest from "../middleware/validateRequest";
@@ -29,7 +33,10 @@ rankingRouter.post(
 			.withMessage("The value must be number"),
 		validateRequest,
 	],
-	registerResult
+	registerScore
 );
+
+rankingRouter.get("/top-ten", validateJWT, getTopTen);
+rankingRouter.get("/user-ranking", validateJWT, getUserRanking);
 
 export default rankingRouter;
