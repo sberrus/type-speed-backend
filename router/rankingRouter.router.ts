@@ -1,16 +1,15 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import {
-	getTopTen,
-	getUserRanking,
-	registerScore,
-} from "../controller/ranking.controller";
+import { getRanking, registerScore } from "../controller/ranking.controller";
 import { userExists } from "../helpers/db-validator";
 import validateJWT from "../middleware/validateJWT";
 import validateRequest from "../middleware/validateRequest";
 
 const rankingRouter = Router();
 
+/**
+ * register new score
+ */
 rankingRouter.post(
 	"/",
 	validateJWT,
@@ -36,7 +35,6 @@ rankingRouter.post(
 	registerScore
 );
 
-rankingRouter.get("/top-ten", validateJWT, getTopTen);
-rankingRouter.get("/user-ranking", validateJWT, getUserRanking);
+rankingRouter.get("/", validateJWT, getRanking);
 
 export default rankingRouter;

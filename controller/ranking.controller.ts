@@ -15,11 +15,20 @@ export type StatsType = {
 	wrong_words: number;
 };
 export const registerScore = async (req: Request, res: Response) => {
+	// body
 	const { id, words_per_minute, valid_words, wrong_words } = req.body;
+	// headers
+	const userToken = req.tokenUid;
 
 	// scores
 	let currentScore, bestScore: Model<any, any> | null;
 
+	// check if user id is same as the uid token provided
+	if (userToken?.uid !== id) {
+		return res
+			.status(401)
+			.json(createErrorResponse("Token provided is not valid"));
+	}
 	// check if user have any score
 	try {
 		currentScore = req.body;
@@ -82,7 +91,6 @@ export const registerScore = async (req: Request, res: Response) => {
 		// add new score
 		await UserRanking.create(currentScore);
 	} catch (error) {
-		console.log(error);
 		return res
 			.status(500)
 			.json(createErrorResponse("Server error un ranking - controller"));
@@ -94,10 +102,21 @@ export const registerScore = async (req: Request, res: Response) => {
 	});
 };
 
-export const getTopTen = async (req: Request, res: Response) => {
-	res.json({ ok: true });
-};
-
-export const getUserRanking = (req: Request, res: Response) => {
-	res.json({ ok: true });
+export const getRanking = async (req: Request, res: Response) => {
+	// get the ranking ordered by words_per_minute limited by 10
+	const userID = req.query["id"];
+	let result;
+	if (userID) {
+		result = await UserRanking.findAll({
+			where: { id: userID },
+			order: [["words_per_minute", "DESC"]],
+			limit: 10,
+		});
+	} else {
+		result = await Ranking.findAll({
+			order: [["words_per_minute", "DESC"]],
+			limit: 10,
+		});
+	}
+	res.json({ result });
 };
