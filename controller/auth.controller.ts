@@ -96,7 +96,6 @@ export const forgotPassword = async (req: Request, res: Response) => {
 	const { username, password, password_confirm, secret } = req.body;
 
 	let user;
-	// TODO:
 	// check if user exists
 	try {
 		user = await User.findOne({ where: { username } });
@@ -128,7 +127,8 @@ export const forgotPassword = async (req: Request, res: Response) => {
 	// change password
 	const hashedPassword = generateHash(password);
 	user.set({ password: hashedPassword });
-	user.save();
-
-	res.json({ ok: true });
+	try {
+		await user.save();
+		return res.json({ ok: true, msg: "password changed succesfully!" });
+	} catch (error) {}
 };

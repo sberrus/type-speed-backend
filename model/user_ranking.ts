@@ -9,11 +9,12 @@ const UserRanking = sequelizeConnection.define("je_user_rankings", {
 	words_per_minute: {
 		type: DataTypes.NUMBER,
 	},
-	valid_words: {
-		type: DataTypes.NUMBER,
+
+	letters_per_second: {
+		type: DataTypes.DECIMAL,
 	},
-	wrong_words: {
-		type: DataTypes.NUMBER,
+	accuracy: {
+		type: DataTypes.DECIMAL,
 	},
 });
 

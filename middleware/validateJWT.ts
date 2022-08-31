@@ -14,8 +14,8 @@ const validateJWT = (req: Request, res: Response, next: NextFunction) => {
 
 	// validate
 	try {
-		const tokenUid = jwt.verify(token, JWT_PRIVATE_KEY);
-		req.tokenUid = tokenUid;
+		const _token = jwt.verify(token, JWT_PRIVATE_KEY);
+		req.token = _token;
 	} catch (error) {
 		console.log(error);
 		return res.status(401).json(createErrorResponse("Token not valid"));

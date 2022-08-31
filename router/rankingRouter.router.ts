@@ -20,7 +20,12 @@ rankingRouter.post(
 	validateJWT,
 	[
 		body("id").exists().withMessage("Field required").custom(userExists),
-		body("words_per_minute")
+		body("total_words")
+			.exists()
+			.withMessage("Field required")
+			.isNumeric()
+			.withMessage("The value must be number"),
+		body("total_letters")
 			.exists()
 			.withMessage("Field required")
 			.isNumeric()

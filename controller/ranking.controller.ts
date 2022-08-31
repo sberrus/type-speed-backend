@@ -5,15 +5,8 @@ import { Model } from "sequelize/types";
 import Ranking from "../model/ranking";
 import UserRanking from "../model/user_ranking";
 // helpers
-import isNewScore from "../helpers/checkScores";
 import createErrorResponse from "../helpers/createErrorResponse";
-// types
-export type StatsType = {
-	id: string;
-	words_per_minute: number;
-	valid_words: number;
-	wrong_words: number;
-};
+import { formatter, isBestScore } from "../helpers/Scores";
 
 /**
  * register new score record
@@ -21,90 +14,78 @@ export type StatsType = {
  */
 export const registerScore = async (req: Request, res: Response) => {
 	// body
-	const { id, words_per_minute, valid_words, wrong_words } = req.body;
-	// headers
-	const userToken = req.tokenUid;
+	const { id } = req.body;
+	// token parsed header
+	const { uid } = req.token;
 
 	// scores
-	let currentScore, bestScore: Model<any, any> | null;
+	const currentScore = formatter(req.body);
+	let bbddBestScore: Model<any, any> | null;
 
 	// check if user id is same as the uid token provided
-	if (userToken?.uid !== id) {
+	if (uid !== id) {
 		return res
 			.status(401)
 			.json(createErrorResponse("Token provided is not valid"));
 	}
-	// check if user have any score
+
+	// get Best Score
 	try {
-		currentScore = req.body;
-		bestScore = await Ranking.findByPk(id);
+		bbddBestScore = await Ranking.findByPk(uid);
 	} catch (error) {
 		console.log(error);
 		return res
 			.status(500)
-			.json(createErrorResponse("Server Error in ranking-controller"));
+			.json(createErrorResponse("Server error in ranking.controller"));
 	}
 
-	// if user have no score saved create first scores
-	if (!bestScore) {
+	// [if user have no scores saved]
+	// create new user score and best score
+	if (!bbddBestScore) {
 		try {
-			// create first score
-			await UserRanking.create({
-				id,
-				words_per_minute,
-				valid_words,
-				wrong_words,
+			Ranking.create(currentScore);
+			UserRanking.create(currentScore);
+			return res.json({
+				ok: true,
+				msg: "Score Saved",
+				isNewScore: true,
 			});
-			// create first best score
-			await Ranking.create({
-				id,
-				words_per_minute,
-				valid_words,
-				wrong_words,
-			});
-
-			return res.json({ ok: true, msg: "Score saved!" });
 		} catch (error) {
 			console.log(error);
 			return res
 				.status(500)
 				.json(
-					createErrorResponse("Server error in ranking-controller")
+					createErrorResponse("Server error un ranking.controller")
 				);
 		}
 	}
 
-	// if user have scores saved
-	// check if current score is better than best score, in that case update best score
-	let newBestScore;
-	if (isNewScore(currentScore, bestScore)) {
-		// update best score
-		bestScore?.set({ ...currentScore });
+	// [if user have scores saved]
+	let _isBestScore;
+	if (bbddBestScore) {
+		_isBestScore = isBestScore(currentScore, bbddBestScore.toJSON());
 		try {
-			newBestScore = await bestScore?.save();
+			if (_isBestScore) {
+				bbddBestScore.set(currentScore);
+				await bbddBestScore.save();
+				await UserRanking.create(currentScore);
+			} else {
+				await UserRanking.create(currentScore);
+			}
+			return res.json({
+				ok: true,
+				msg: "Score Saved",
+				isBestScore: _isBestScore,
+			});
 		} catch (error) {
 			console.log(error);
 			return res
 				.status(500)
 				.json(
-					createErrorResponse("Server error in ranking - controller")
+					createErrorResponse("Server error in ranking.controller")
 				);
 		}
 	}
-
-	try {
-		// add new score
-		await UserRanking.create(currentScore);
-	} catch (error) {
-		return res
-			.status(500)
-			.json(createErrorResponse("Server error un ranking - controller"));
-	}
-	return res.json({
-		ok: true,
-		msg: "Score saved!",
-		newBestScore: !!newBestScore,
-	});
 };
 
 /**
@@ -133,10 +114,10 @@ export const getTopTen = async (req: Request, res: Response) => {
  */
 export const getUserRanking = async (req: Request, res: Response) => {
 	const id = req.params.id;
-	const tokenId = req.tokenUid.uid;
+	const { uid } = req.token;
 	let result;
 
-	if (id !== tokenId) {
+	if (id !== uid) {
 		return res.status(404).json(createErrorResponse("Token not valid"));
 	}
 

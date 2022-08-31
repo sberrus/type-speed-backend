@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelizeConnection from "../database/connection";
 
-const Ranking = sequelizeConnection.define("je_ranking", {
+const Ranking = sequelizeConnection.define("je_rankings", {
 	id: {
 		type: DataTypes.STRING,
 		primaryKey: true,
@@ -9,11 +9,12 @@ const Ranking = sequelizeConnection.define("je_ranking", {
 	words_per_minute: {
 		type: DataTypes.NUMBER,
 	},
-	valid_words: {
-		type: DataTypes.NUMBER,
+
+	letters_per_second: {
+		type: DataTypes.DECIMAL,
 	},
-	wrong_words: {
-		type: DataTypes.NUMBER,
+	accuracy: {
+		type: DataTypes.DECIMAL,
 	},
 });
 
