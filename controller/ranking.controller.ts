@@ -14,6 +14,11 @@ export type StatsType = {
 	valid_words: number;
 	wrong_words: number;
 };
+
+/**
+ * register new score record
+ * @returns
+ */
 export const registerScore = async (req: Request, res: Response) => {
 	// body
 	const { id, words_per_minute, valid_words, wrong_words } = req.body;
@@ -102,21 +107,87 @@ export const registerScore = async (req: Request, res: Response) => {
 	});
 };
 
-export const getRanking = async (req: Request, res: Response) => {
+/**
+ * retrieves the current best scores`s top ten scores
+ * @returns
+ */
+export const getTopTen = async (req: Request, res: Response) => {
 	// get the ranking ordered by words_per_minute limited by 10
-	const userID = req.query["id"];
-	let result;
-	if (userID) {
-		result = await UserRanking.findAll({
-			where: { id: userID },
+	try {
+		const result = await Ranking.findAll({
 			order: [["words_per_minute", "DESC"]],
 			limit: 10,
 		});
-	} else {
-		result = await Ranking.findAll({
-			order: [["words_per_minute", "DESC"]],
-			limit: 10,
-		});
+		return res.json({ result });
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(500)
+			.json(createErrorResponse("Server error in ranking.controller"));
 	}
+};
+
+/**
+ * retrieves user`s top ten score
+ * @returns
+ */
+export const getUserRanking = async (req: Request, res: Response) => {
+	const id = req.params.id;
+	const tokenId = req.tokenUid.uid;
+	let result;
+
+	if (id !== tokenId) {
+		return res.status(404).json(createErrorResponse("Token not valid"));
+	}
+
+	try {
+		result = await UserRanking.findAll({
+			where: { id },
+			order: [["words_per_minute", "DESC"]],
+			limit: 10,
+		});
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(500)
+			.json(createErrorResponse("Server error in ranking.controller"));
+	}
+
 	res.json({ result });
 };
+
+/**
+ * retrieves best scores top ten scores sorted by category
+ * @returns
+ */
+export const getTopTenByCategory = async (req: Request, res: Response) => {
+	// ask for category to sort it the results by it
+	const categoriesAllowed = [
+		"words_per_minute",
+		"letters_per_second",
+		"accuracy",
+	];
+	const category = req.params.category;
+
+	// check if the category is valid
+	if (!categoriesAllowed.includes(category)) {
+		return res
+			.status(404)
+			.json(createErrorResponse(`Category ${category}, doesn't exists`));
+	}
+
+	try {
+		const result = await Ranking.findAll({
+			order: [[category, "DESC"]],
+			limit: 10,
+		});
+		return res.json({ result });
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(500)
+			.json(createErrorResponse("Server error in ranking.controller"));
+	}
+};
+
+// TODO: REALIZAR OPERACIONES PARA GUARDAR DIRECTAMENTE PPM, PRECISIÓN Y LPS

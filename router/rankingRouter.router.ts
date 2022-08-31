@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { getRanking, registerScore } from "../controller/ranking.controller";
+import {
+	getTopTen,
+	getTopTenByCategory,
+	getUserRanking,
+	registerScore,
+} from "../controller/ranking.controller";
 import { userExists } from "../helpers/db-validator";
 import validateJWT from "../middleware/validateJWT";
 import validateRequest from "../middleware/validateRequest";
@@ -35,6 +40,10 @@ rankingRouter.post(
 	registerScore
 );
 
-rankingRouter.get("/", validateJWT, getRanking);
+rankingRouter.get("/", getTopTen);
+
+rankingRouter.get("/:id", validateJWT, getUserRanking);
+
+rankingRouter.get("/category/:category", getTopTenByCategory);
 
 export default rankingRouter;
