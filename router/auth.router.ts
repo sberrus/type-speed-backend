@@ -7,10 +7,12 @@ import { userNotExists } from "../helpers/db-validator";
 import validateRequest from "../middleware/validateRequest";
 // //controllers
 import {
+	changeSecret,
 	createUser,
 	forgotPassword,
 	login,
 } from "../controller/auth.controller";
+import validateJWT from "../middleware/validateJWT";
 
 //rutas
 export const authRouter = Router();
@@ -116,4 +118,58 @@ authRouter.post(
 		validateRequest,
 	],
 	forgotPassword
+);
+
+authRouter.post(
+	"/change-password",
+	[
+		validateJWT,
+		check("password")
+			.exists()
+			.withMessage("password field required")
+			.isLength({ min: 5, max: 255 })
+			.withMessage("password length between 5 - 255")
+			.trim(),
+		check("password_confirm")
+			.exists()
+			.withMessage("password field required")
+			.isLength({ min: 5, max: 255 })
+			.withMessage("password length between 5 - 255")
+			.trim(),
+		check("secret")
+			.exists()
+			.withMessage("secret field required")
+			.isLength({ min: 5, max: 255 })
+			.withMessage("secret length between 5 - 255")
+			.trim(),
+		validateRequest,
+	],
+	changeSecret
+);
+
+authRouter.post(
+	"/change-secret",
+	[
+		validateJWT,
+		check("old_secret")
+			.exists()
+			.withMessage("old_secret field required")
+			.isLength({ min: 5, max: 255 })
+			.withMessage("secret length between 5 - 255")
+			.trim(),
+		check("new_secret")
+			.exists()
+			.withMessage("new_secret field required")
+			.isLength({ min: 5, max: 255 })
+			.withMessage("secret length between 5 - 255")
+			.trim(),
+		check("secret_confirm")
+			.exists()
+			.withMessage("secret_confirm field required")
+			.isLength({ min: 5, max: 255 })
+			.withMessage("secret_confirm length between 5 - 255")
+			.trim(),
+		validateRequest,
+	],
+	changeSecret
 );
