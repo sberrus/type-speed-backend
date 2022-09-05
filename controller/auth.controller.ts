@@ -109,8 +109,12 @@ export const forgotPassword = async (req: Request, res: Response) => {
 			.status(500)
 			.json(createErrorResponse(`Server error in auth-controller`));
 	}
+
 	// check if secret is correct
-	const isValidSecret = compareHash(secret, user.get("secret") as string);
+	const isValidSecret = await compareHash(
+		secret,
+		user.get("secret") as string
+	);
 	if (!isValidSecret) {
 		return res.status(400).json(createErrorResponse("secret is not valid"));
 	}
