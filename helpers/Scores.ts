@@ -16,7 +16,7 @@ export const formatter: FormatterType = (rawData: RawStatsType) => {
 	// PPM
 	results.words_per_minute = valid_words;
 	// LPS
-	results.letters_per_second = total_letters;
+	results.letters_per_second = total_letters / 60;
 	// ACCU
 	if (valid_words === 0) {
 		results.accuracy = 0;

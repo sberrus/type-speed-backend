@@ -20,7 +20,6 @@ export const registerScore = async (req: Request, res: Response) => {
 
 	// scores
 	const currentScore = formatter(req.body);
-	console.log(currentScore);
 	let bbddBestScore: Model<any, any> | null;
 
 	// check if user id is same as the uid token provided
@@ -44,8 +43,8 @@ export const registerScore = async (req: Request, res: Response) => {
 	// create new user score and best score
 	if (!bbddBestScore) {
 		try {
-			Ranking.create(currentScore);
-			UserRanking.create(currentScore);
+			await Ranking.create(currentScore);
+			await UserRanking.create(currentScore);
 			return res.json({
 				ok: true,
 				msg: "Score Saved",

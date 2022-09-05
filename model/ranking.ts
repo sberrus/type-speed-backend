@@ -5,6 +5,7 @@ const Ranking = sequelizeConnection.define("je_rankings", {
 	id: {
 		type: DataTypes.STRING,
 		primaryKey: true,
+		unique: true,
 	},
 	words_per_minute: {
 		type: DataTypes.NUMBER,
