@@ -20,6 +20,7 @@ export const registerScore = async (req: Request, res: Response) => {
 
 	// scores
 	const currentScore = formatter(req.body);
+	console.log(currentScore);
 	let bbddBestScore: Model<any, any> | null;
 
 	// check if user id is same as the uid token provided
