@@ -158,11 +158,34 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 	}
 
 	try {
-		const result = await Ranking.findAll({
-			order: [[category, "DESC"]],
-			limit: 10,
-		});
-		return res.json({ result });
+		if (category === "words_per_minute") {
+			const result = await Ranking.findAll({
+				order: [
+					[category, "DESC"],
+					["accuracy", "DESC"],
+				],
+				limit: 10,
+			});
+			return res.json({ result });
+		} else if (category === "letters_per_second") {
+			const result = await Ranking.findAll({
+				order: [
+					[category, "DESC"],
+					["accuracy", "DESC"],
+				],
+				limit: 10,
+			});
+			return res.json({ result });
+		} else if (category === "accuracy") {
+			const result = await Ranking.findAll({
+				order: [
+					[category, "DESC"],
+					["words_per_minute", "DESC"],
+				],
+				limit: 10,
+			});
+			return res.json({ result });
+		}
 	} catch (error) {
 		console.log(error);
 		return res
@@ -170,5 +193,3 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 			.json(createErrorResponse("Server error in ranking.controller"));
 	}
 };
-
-// TODO: REALIZAR OPERACIONES PARA GUARDAR DIRECTAMENTE PPM, PRECISIÓN Y LPS
