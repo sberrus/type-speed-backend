@@ -7,6 +7,7 @@ import { userNotExists } from "../helpers/db-validator";
 import validateRequest from "../middleware/validateRequest";
 // //controllers
 import {
+	changePassword,
 	changeSecret,
 	createUser,
 	forgotPassword,
@@ -144,7 +145,7 @@ authRouter.post(
 			.trim(),
 		validateRequest,
 	],
-	changeSecret
+	changePassword
 );
 
 authRouter.post(

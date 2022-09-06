@@ -31,7 +31,7 @@ class Server {
 			await sequelizeConnection.authenticate();
 			console.log("BBDD connected");
 		} catch (error: any) {
-			throw new Error(error);
+			console.log(error);
 		}
 	}
 

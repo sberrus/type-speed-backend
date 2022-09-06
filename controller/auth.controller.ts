@@ -44,7 +44,7 @@ export const createUser = async (req: Request, res: Response) => {
 
 	try {
 		const token = await generateJWT(username);
-		res.json({ user: { username }, token });
+		res.json({ user: { username, secret_question }, token });
 	} catch (error) {
 		console.log(error);
 		return res
@@ -84,8 +84,9 @@ export const login = async (req: Request, res: Response) => {
 		// payload data
 		const token = await generateJWT(user.get("username") as string);
 		const username = user.get("username");
+		const secret_question = user.get("secret_question");
 
-		res.json({ user: { username }, token });
+		res.json({ user: { username, secret_question }, token });
 	} catch (error) {
 		console.log(error);
 		res.json(createErrorResponse("Server Error in auth-controller"));
