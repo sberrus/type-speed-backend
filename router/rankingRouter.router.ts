@@ -10,7 +10,7 @@ import { userExists } from "../helpers/db-validator";
 import validateJWT from "../middleware/validateJWT";
 import validateRequest from "../middleware/validateRequest";
 
-const rankingRouter = Router();
+export const rankingRouter = Router();
 
 /**
  * register new score
@@ -50,5 +50,3 @@ rankingRouter.get("/", getTopTen);
 rankingRouter.get("/:id", validateJWT, getUserRanking);
 
 rankingRouter.get("/category/:category", getTopTenByCategory);
-
-export default rankingRouter;

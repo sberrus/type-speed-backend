@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 // routers
-import rankingRouter from "../router/rankingRouter.router";
+import { rankingRouter } from "../router/rankingRouter.router";
 import { authRouter } from "../router/auth.router";
 // bbdd connection
 import sequelizeConnection from "../database/connection";

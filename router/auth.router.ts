@@ -1,10 +1,12 @@
 //Imports
-import { NextFunction, Request, Response, Router } from "express";
+import { Router } from "express";
 import { body, check } from "express-validator";
 // //helpers
 import { userNotExists } from "../helpers/db-validator";
+import validateUsername from "../helpers/validateUsername";
 // //middlewares
 import validateRequest from "../middleware/validateRequest";
+import validateJWT from "../middleware/validateJWT";
 // //controllers
 import {
 	changePassword,
@@ -13,11 +15,11 @@ import {
 	forgotPassword,
 	login,
 } from "../controller/auth.controller";
-import validateJWT from "../middleware/validateJWT";
 
 //rutas
 export const authRouter = Router();
 
+// login
 authRouter.post(
 	"/login",
 	[
@@ -37,7 +39,7 @@ authRouter.post(
 	],
 	login
 );
-
+// register
 authRouter.post(
 	"/register",
 	[
@@ -48,6 +50,8 @@ authRouter.post(
 			.withMessage("username lenght between 5 - 20")
 			.trim()
 			.escape()
+			.custom(validateUsername)
+			.bail()
 			.custom(userNotExists)
 			.bail(),
 		check("password")
@@ -86,7 +90,7 @@ authRouter.post(
 	],
 	createUser
 );
-
+// forgot-password
 authRouter.post(
 	"/forgot-password",
 	[
@@ -120,7 +124,7 @@ authRouter.post(
 	],
 	forgotPassword
 );
-
+// change-password
 authRouter.post(
 	"/change-password",
 	[
@@ -147,7 +151,7 @@ authRouter.post(
 	],
 	changePassword
 );
-
+// change-secret
 authRouter.post(
 	"/change-secret",
 	[
