@@ -37,16 +37,22 @@ export const createUser = async (req: Request, res: Response) => {
 			secret: secretHash,
 		});
 	} catch (error) {
-		console.log(error);
-		res.status(500).json(createErrorResponse("Server Error"));
-		return;
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 40 ~ createUser ~ error",
+			error
+		);
+
+		return res.status(500).json(createErrorResponse("Server Error"));
 	}
 
 	try {
 		const token = await generateJWT(username);
 		res.json({ user: { username, secret_question }, token });
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 52 ~ createUser ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse("Server error in auth.controller"));
@@ -66,7 +72,10 @@ export const login = async (req: Request, res: Response) => {
 				.json(createErrorResponse(`username ${username}, not found`));
 		}
 	} catch (error: any) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 69 ~ login ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse(`Server error in auth-controller`));
@@ -88,7 +97,10 @@ export const login = async (req: Request, res: Response) => {
 
 		res.json({ user: { username, secret_question }, token });
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 91 ~ login ~ error",
+			error
+		);
 		res.json(createErrorResponse("Server Error in auth-controller"));
 	}
 };
@@ -105,7 +117,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
 				.status(404)
 				.json(createErrorResponse(`username ${username}, not found`));
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 120 ~ forgotPassword ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse(`Server error in auth-controller`));
@@ -135,7 +150,13 @@ export const forgotPassword = async (req: Request, res: Response) => {
 	try {
 		await user.save();
 		return res.json({ ok: true, msg: "password changed succesfully!" });
-	} catch (error) {}
+	} catch (error) {
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 154 ~ forgotPassword ~ error",
+			error
+		);
+		return res.json(createErrorResponse("Error in server auth.controller"));
+	}
 };
 
 export const changePassword = async (req: Request, res: Response) => {
@@ -151,7 +172,10 @@ export const changePassword = async (req: Request, res: Response) => {
 				.status(404)
 				.json(createErrorResponse(`username ${username}, not found`));
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 154 ~ changePassword ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse(`Server error in auth-controller`));
@@ -182,7 +206,10 @@ export const changePassword = async (req: Request, res: Response) => {
 		await user.save();
 		return res.json({ ok: true, msg: "password changed succesfully!" });
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 188 ~ changePassword ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse("Error in auth.controller"));
@@ -202,7 +229,10 @@ export const changeSecret = async (req: Request, res: Response) => {
 				.status(404)
 				.json(createErrorResponse(`username ${username}, not found`));
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 232 ~ changeSecret ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse(`Server error in auth-controller`));
@@ -235,7 +265,10 @@ export const changeSecret = async (req: Request, res: Response) => {
 		await user.save();
 		return res.json({ ok: true, msg: "secret changed succesfully!" });
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: auth.controller.ts ~ line 268 ~ changeSecret ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse("Error in auth.controller"));

@@ -33,7 +33,10 @@ export const registerScore = async (req: Request, res: Response) => {
 	try {
 		bbddBestScore = await Ranking.findByPk(uid);
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: ranking.controller.ts ~ line 36 ~ registerScore ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse("Server error in ranking.controller"));
@@ -43,15 +46,22 @@ export const registerScore = async (req: Request, res: Response) => {
 	// create new user score and best score
 	if (!bbddBestScore) {
 		try {
-			await Ranking.create(currentScore);
+			// check if current score LPS is valid
+			if (currentScore.words_per_minute > 25) {
+				await Ranking.create(currentScore);
+			}
 			await UserRanking.create(currentScore);
 			return res.json({
 				ok: true,
 				msg: "Score Saved",
 				isNewScore: true,
+				isRankingValid: currentScore.words_per_minute > 25,
 			});
 		} catch (error) {
-			console.log(error);
+			console.log(
+				"🚀 ~ file: ranking.controller.ts ~ line 60 ~ registerScore ~ error",
+				error
+			);
 			return res
 				.status(500)
 				.json(
@@ -66,8 +76,12 @@ export const registerScore = async (req: Request, res: Response) => {
 		_isBestScore = isBestScore(currentScore, bbddBestScore.toJSON());
 		try {
 			if (_isBestScore) {
-				bbddBestScore.set(currentScore);
-				await bbddBestScore.save();
+				// check if wpm is valid to save
+				if (currentScore.words_per_minute > 25) {
+					bbddBestScore.set(currentScore);
+					await bbddBestScore.save();
+				}
+
 				await UserRanking.create(currentScore);
 			} else {
 				await UserRanking.create(currentScore);
@@ -76,9 +90,13 @@ export const registerScore = async (req: Request, res: Response) => {
 				ok: true,
 				msg: "Score Saved",
 				isBestScore: _isBestScore,
+				isRankingValid: currentScore.words_per_minute > 25,
 			});
 		} catch (error) {
-			console.log(error);
+			console.log(
+				"🚀 ~ file: ranking.controller.ts ~ line 94 ~ registerScore ~ error",
+				error
+			);
 			return res
 				.status(500)
 				.json(
@@ -101,7 +119,10 @@ export const getTopTen = async (req: Request, res: Response) => {
 		});
 		return res.json({ result });
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: ranking.controller.ts ~ line 120 ~ getTopTen ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse("Server error in ranking.controller"));
@@ -128,7 +149,10 @@ export const getUserRanking = async (req: Request, res: Response) => {
 			limit: 10,
 		});
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: ranking.controller.ts ~ line 150 ~ getUserRanking ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse("Server error in ranking.controller"));
@@ -187,7 +211,10 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 			return res.json({ result });
 		}
 	} catch (error) {
-		console.log(error);
+		console.log(
+			"🚀 ~ file: ranking.controller.ts ~ line 212 ~ getTopTenByCategory ~ error",
+			error
+		);
 		return res
 			.status(500)
 			.json(createErrorResponse("Server error in ranking.controller"));

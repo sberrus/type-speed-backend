@@ -31,7 +31,10 @@ class Server {
 			await sequelizeConnection.authenticate();
 			console.log("BBDD connected");
 		} catch (error: any) {
-			console.log(error);
+			console.log(
+				"🚀 ~ file: server.ts ~ line 34 ~ Server ~ bbddConnection ~ error",
+				error
+			);
 		}
 	}
 
