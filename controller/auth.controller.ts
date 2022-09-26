@@ -80,21 +80,21 @@ export const login = async (req: Request, res: Response) => {
 			.json(createErrorResponse(`Server error in auth-controller`));
 	}
 
-	// compare passwords
+	// check password
 	const hashedPassword = user.get("password") as string;
 	const validPassword = await compareHash(password, hashedPassword);
 	if (!validPassword) {
 		return res.status(401).json(createErrorResponse("Incorrect Password"));
 	}
 
-	// generate JWT
 	try {
 		// payload data
 		const token = await generateJWT(user.get("username") as string);
 		const username = user.get("username");
 		const secret_question = user.get("secret_question");
+		const city = user.get("city");
 
-		res.json({ user: { username, secret_question }, token });
+		res.json({ user: { username, secret_question, city }, token });
 	} catch (error) {
 		console.log(
 			"🚀 ~ file: auth.controller.ts ~ line 91 ~ login ~ error",
