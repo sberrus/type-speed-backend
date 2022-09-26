@@ -59,33 +59,45 @@ authRouter.post(
 			.withMessage("password field required")
 			.isLength({ max: 255, min: 5 })
 			.withMessage("password lenght between 5 - 255")
-			.trim(),
+			.trim()
+			.bail(),
 		check("password_confirm")
 			.exists()
 			.withMessage("password field required")
 			.isLength({ max: 255, min: 5 })
 			.withMessage("password lenght between 5 - 255")
-			.trim(),
+			.trim()
+			.bail(),
+		check("city")
+			.exists()
+			.withMessage("city field required")
+			.isIn(["madrid", "cali"])
+			.withMessage("city field provided is not valid")
+			.trim()
+			.bail(),
 		check("department")
 			.exists()
 			.withMessage("department field required")
 			.isIn(["support"])
 			.withMessage("department field provided is not valid")
-			.trim(),
+			.trim()
+			.bail(),
 		check("secret_question")
 			.exists()
 			.withMessage("secret_question field required")
 			.isLength({ max: 255, min: 5 })
 			.withMessage("secret_question lenght between 5 - 255")
 			.trim()
-			.escape(),
+			.escape()
+			.bail(),
 		check("secret")
 			.exists()
 			.withMessage("secret field required")
 			.isLength({ max: 255 })
 			.withMessage("secret max-lenght 255")
 			.trim()
-			.escape(),
+			.escape()
+			.bail(),
 		validateRequest,
 	],
 	createUser

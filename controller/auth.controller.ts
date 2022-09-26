@@ -9,12 +9,11 @@ export const createUser = async (req: Request, res: Response) => {
 		username,
 		password,
 		password_confirm,
+		city,
 		department,
 		secret_question,
 		secret,
 	} = req.body;
-	let passwordHash, secretHash;
-
 	if (password !== password_confirm) {
 		res.status(400).json(
 			createErrorResponse("password and confirmation aren't same")
@@ -22,19 +21,32 @@ export const createUser = async (req: Request, res: Response) => {
 		return;
 	}
 	// hash password
-	passwordHash = generateHash(password);
+	const passwordHash = generateHash(password);
 	// hash secret
-	secretHash = generateHash(secret);
+	const secretHash = generateHash(secret);
 
 	// save data into bbdd
-	let user;
 	try {
-		user = await User.create({
+		const user = await User.create({
 			username,
 			password: passwordHash,
 			secret_question,
+			city,
 			department,
 			secret: secretHash,
+		});
+
+		// generate login token
+		const token = await generateJWT(username);
+
+		//
+		res.json({
+			user: {
+				username: user.get("username"),
+				secret_question: user.get("secret_question"),
+				city: user.get("city"),
+			},
+			token,
 		});
 	} catch (error) {
 		console.log(
@@ -43,19 +55,6 @@ export const createUser = async (req: Request, res: Response) => {
 		);
 
 		return res.status(500).json(createErrorResponse("Server Error"));
-	}
-
-	try {
-		const token = await generateJWT(username);
-		res.json({ user: { username, secret_question }, token });
-	} catch (error) {
-		console.log(
-			"🚀 ~ file: auth.controller.ts ~ line 52 ~ createUser ~ error",
-			error
-		);
-		return res
-			.status(500)
-			.json(createErrorResponse("Server error in auth.controller"));
 	}
 };
 
