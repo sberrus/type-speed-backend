@@ -15,6 +15,10 @@ const User = sequelizeConnection.define("je_users", {
 		type: DataTypes.STRING,
 		allowNull: false,
 	},
+	city: {
+		type: DataTypes.ENUM("madrid", "cali"),
+		allowNull: false,
+	},
 	department: {
 		type: DataTypes.ENUM("support"),
 		allowNull: false,

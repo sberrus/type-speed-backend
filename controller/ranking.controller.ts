@@ -1,16 +1,16 @@
 // imports
 import { Request, Response } from "express";
-import { Model } from "sequelize/types";
+import { Model, WhereOptions } from "sequelize/types";
 // models
 import Ranking from "../model/ranking";
 import UserRanking from "../model/user_ranking";
 // helpers
 import createErrorResponse from "../helpers/createErrorResponse";
 import { formatter, isBestScore } from "../helpers/Scores";
+import User from "../model/user";
 
 /**
  * register new score record
- * @returns
  */
 export const registerScore = async (req: Request, res: Response) => {
 	// body
@@ -107,12 +107,33 @@ export const registerScore = async (req: Request, res: Response) => {
 };
 
 /**
- * retrieves the current best scores`s top ten scores
- * @returns
+ * retrieves the current top ten best scores`s
  */
 export const getTopTen = async (req: Request, res: Response) => {
-	// get the ranking ordered by words_per_minute limited by 10
 	try {
+		// get participants by city
+		const cityQuery = req.query.city;
+		if (cityQuery) {
+			const participants = await User.findAll({
+				where: {
+					city: cityQuery,
+				},
+			});
+			const cityParticipants = participants.map(
+				(participant) => participant.toJSON().username
+			);
+
+			// Filter parcicipants by city and limit by 10
+			const result = await Ranking.findAll({
+				order: [["words_per_minute", "DESC"]],
+				where: { id: cityParticipants },
+				limit: 10,
+			});
+
+			return res.json({ result });
+		}
+
+		// get the ranking ordered by words_per_minute limited by 10
 		const result = await Ranking.findAll({
 			order: [["words_per_minute", "DESC"]],
 			limit: 10,
@@ -120,9 +141,10 @@ export const getTopTen = async (req: Request, res: Response) => {
 		return res.json({ result });
 	} catch (error) {
 		console.log(
-			"🚀 ~ file: ranking.controller.ts ~ line 120 ~ getTopTen ~ error",
+			"🚀 ~ file: ranking.controller.ts ~ line 143 ~ getTopTen ~ error",
 			error
 		);
+
 		return res
 			.status(500)
 			.json(createErrorResponse("Server error in ranking.controller"));
@@ -131,13 +153,17 @@ export const getTopTen = async (req: Request, res: Response) => {
 
 /**
  * retrieves user`s top ten score
- * @returns
  */
 export const getUserRanking = async (req: Request, res: Response) => {
+	// params
 	const id = req.params.id;
+	// token
 	const { uid } = req.token;
+
+	//
 	let result;
 
+	// validate if req token is same as headers token
 	if (id !== uid) {
 		return res.status(404).json(createErrorResponse("Token not valid"));
 	}
@@ -163,7 +189,6 @@ export const getUserRanking = async (req: Request, res: Response) => {
 
 /**
  * retrieves best scores top ten scores sorted by category
- * @returns
  */
 export const getTopTenByCategory = async (req: Request, res: Response) => {
 	// ask for category to sort it the results by it
@@ -181,6 +206,30 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 			.json(createErrorResponse(`Category ${category}, doesn't exists`));
 	}
 
+	// filter participants by city
+
+	// query
+	const cityQuery = req.query.city;
+	console.log(cityQuery);
+
+	let cityParticipantsFilter: WhereOptions;
+	if (cityQuery) {
+		const participants = await User.findAll({
+			where: {
+				city: cityQuery,
+			},
+		});
+		const cityParticipants = participants.map(
+			(participant) => participant.toJSON().username
+		);
+
+		cityParticipantsFilter = {
+			id: cityParticipants,
+		};
+	} else {
+		cityParticipantsFilter = {};
+	}
+
 	try {
 		if (category === "words_per_minute") {
 			const result = await Ranking.findAll({
@@ -188,6 +237,9 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 					[category, "DESC"],
 					["accuracy", "DESC"],
 				],
+				where: {
+					...cityParticipantsFilter,
+				},
 				limit: 10,
 			});
 			return res.json({ result });
@@ -197,6 +249,9 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 					[category, "DESC"],
 					["accuracy", "DESC"],
 				],
+				where: {
+					...cityParticipantsFilter,
+				},
 				limit: 10,
 			});
 			return res.json({ result });
@@ -206,6 +261,9 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 					[category, "DESC"],
 					["words_per_minute", "DESC"],
 				],
+				where: {
+					...cityParticipantsFilter,
+				},
 				limit: 10,
 			});
 			return res.json({ result });

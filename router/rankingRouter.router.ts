@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 import {
 	getTopTen,
 	getTopTenByCategory,
@@ -19,7 +19,10 @@ rankingRouter.post(
 	"/",
 	validateJWT,
 	[
-		body("id").exists().withMessage("Field required").custom(userExists),
+		body("user_id")
+			.exists()
+			.withMessage("Field required")
+			.custom(userExists),
 		body("total_words")
 			.exists()
 			.withMessage("Field required")
@@ -45,8 +48,22 @@ rankingRouter.post(
 	registerScore
 );
 
-rankingRouter.get("/", getTopTen);
+rankingRouter.get(
+	"/",
+	[
+		// params
+		query("city").optional().default("madrid"),
+	],
+	getTopTen
+);
 
 rankingRouter.get("/:id", validateJWT, getUserRanking);
 
-rankingRouter.get("/category/:category", getTopTenByCategory);
+rankingRouter.get(
+	"/category/:category",
+	[
+		// params
+		query("city").optional().default("madrid"),
+	],
+	getTopTenByCategory
+);
