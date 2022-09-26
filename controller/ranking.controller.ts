@@ -210,7 +210,6 @@ export const getTopTenByCategory = async (req: Request, res: Response) => {
 
 	// query
 	const cityQuery = req.query.city;
-	console.log(cityQuery);
 
 	let cityParticipantsFilter: WhereOptions;
 	if (cityQuery) {
